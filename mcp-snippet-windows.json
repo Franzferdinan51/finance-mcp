@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "finance": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "C:\\Users\\franz\\OneDrive\\Desktop\\finance-mcp-server\\start-windows.cmd"
+      ]
+    }
+  }
+}
