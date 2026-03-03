@@ -18,6 +18,7 @@ Run `npm install` once in the folder, or use the included start scripts and they
 - `start-windows.cmd`: Windows launcher
 - `start-linux.sh`: Linux launcher
 - `start-macos.sh`: macOS launcher
+- `mcp.json`: ready-to-copy LM Studio example config
 - `package.json`: metadata and runtime dependencies
 - `package-lock.json`: pinned dependency versions for consistent installs
 - `openclaw/`: OpenClaw CLI bridge, install scripts, and config snippet
