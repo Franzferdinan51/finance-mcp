@@ -18,7 +18,7 @@ Run `npm install` once in the folder, or use the included start scripts and they
 - `start-windows.cmd`: Windows launcher
 - `start-linux.sh`: Linux launcher
 - `start-macos.sh`: macOS launcher
-- `mcp.json`: ready-to-copy LM Studio example config
+- `mcp.json`: portable LM Studio example config
 - `package.json`: metadata and runtime dependencies
 - `package-lock.json`: pinned dependency versions for consistent installs
 - `openclaw/`: OpenClaw CLI bridge, install scripts, and config snippet
@@ -102,9 +102,9 @@ Windows:
 {
   "mcpServers": {
     "finance": {
-      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "command": "C:\\path\\to\\node.exe",
       "args": [
-        "C:\\Users\\franz\\OneDrive\\Desktop\\finance-mcp-server\\server.js"
+        "C:\\path\\to\\finance-mcp-server\\server.js"
       ],
       "env": {
         "FINANCE_MCP_SILENT": "1",
@@ -115,6 +115,8 @@ Windows:
   }
 }
 ```
+
+Replace both Windows paths with your actual `node.exe` location and your local `finance-mcp-server\\server.js` path.
 
 Linux:
 

@@ -1,9 +1,9 @@
 {
   "mcpServers": {
     "finance": {
-      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "command": "C:\\path\\to\\node.exe",
       "args": [
-        "C:\\Users\\franz\\OneDrive\\Desktop\\finance-mcp-server\\server.js"
+        "C:\\path\\to\\finance-mcp-server\\server.js"
       ],
       "env": {
         "FINANCE_MCP_SILENT": "1",
