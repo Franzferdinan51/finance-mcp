@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET="${HOME}/.openclaw/skills/finance-mcp"
+
+mkdir -p "$TARGET"
+cp "$SCRIPT_DIR/skill/SKILL.md" "$TARGET/SKILL.md"
+cp "$SCRIPT_DIR/finance-tools.js" "$TARGET/finance-tools.js"
+cp "$SCRIPT_DIR/../server.js" "$TARGET/server.js"
+
+echo "Installed OpenClaw skill to $TARGET"

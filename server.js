@@ -3,7 +3,7 @@
 const { URL } = require("node:url");
 
 const SERVER_NAME = "finance-mcp-server";
-const SERVER_VERSION = "0.2.0";
+const SERVER_VERSION = "0.3.0";
 const DEFAULT_PROTOCOL_VERSION = "2024-11-05";
 const MAX_BATCH_SYMBOLS = 10;
 const HTTP_TIMEOUT_MS = readIntegerEnv("FINANCE_MCP_HTTP_TIMEOUT_MS", 15000, 1000, 60000);
@@ -130,26 +130,30 @@ const TOOLS = [
 let protocolVersion = DEFAULT_PROTOCOL_VERSION;
 let buffer = Buffer.alloc(0);
 
-process.stdin.on("data", (chunk) => {
-  buffer = Buffer.concat([buffer, chunk]);
-  drainMessages();
-});
+function startServer() {
+  buffer = Buffer.alloc(0);
 
-process.stdin.on("error", (error) => {
-  logError("stdin", error);
-});
+  process.stdin.on("data", (chunk) => {
+    buffer = Buffer.concat([buffer, chunk]);
+    drainMessages();
+  });
 
-process.stdout.on("error", (error) => {
-  logError("stdout", error);
-});
+  process.stdin.on("error", (error) => {
+    logError("stdin", error);
+  });
 
-process.on("uncaughtException", (error) => {
-  logError("uncaughtException", error);
-});
+  process.stdout.on("error", (error) => {
+    logError("stdout", error);
+  });
 
-process.on("unhandledRejection", (error) => {
-  logError("unhandledRejection", error);
-});
+  process.on("uncaughtException", (error) => {
+    logError("uncaughtException", error);
+  });
+
+  process.on("unhandledRejection", (error) => {
+    logError("unhandledRejection", error);
+  });
+}
 
 function drainMessages() {
   while (true) {
@@ -798,4 +802,18 @@ function toNumberIfPossible(value) {
 function logError(scope, error) {
   const message = error instanceof Error ? error.stack || error.message : String(error);
   process.stderr.write(`[${SERVER_NAME}] ${scope}: ${message}\n`);
+}
+
+module.exports = {
+  startServer,
+  getStockQuote,
+  getStockQuotesBatch,
+  getCoinbaseSpotPrice,
+  getCoinbasePairPrices,
+  searchPolymarketMarkets,
+  getPolymarketMarket,
+};
+
+if (require.main === module) {
+  startServer();
 }

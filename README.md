@@ -75,10 +75,13 @@ Windows:
 {
   "mcpServers": {
     "finance": {
-      "command": "cmd",
+      "command": "C:\\Program Files\\nodejs\\node.exe",
       "args": [
-        "/c",
-        "C:\\Users\\franz\\OneDrive\\Desktop\\finance-mcp-server\\start-windows.cmd"
+        "C:\\Users\\franz\\OneDrive\\Desktop\\finance-mcp-server\\server.js"
+      ],
+      "env": {
+        "FINANCE_MCP_HTTP_TIMEOUT_MS": "20000",
+        "FINANCE_MCP_CACHE_TTL_MS": "10000"
       ]
     }
   }
@@ -91,7 +94,11 @@ Linux:
 {
   "mcpServers": {
     "finance": {
-      "command": "/absolute/path/to/finance-mcp-server/start-linux.sh"
+      "command": "/absolute/path/to/finance-mcp-server/start-linux.sh",
+      "env": {
+        "FINANCE_MCP_HTTP_TIMEOUT_MS": "20000",
+        "FINANCE_MCP_CACHE_TTL_MS": "10000"
+      }
     }
   }
 }
@@ -103,11 +110,66 @@ macOS:
 {
   "mcpServers": {
     "finance": {
-      "command": "/absolute/path/to/finance-mcp-server/start-macos.sh"
+      "command": "/absolute/path/to/finance-mcp-server/start-macos.sh",
+      "env": {
+        "FINANCE_MCP_HTTP_TIMEOUT_MS": "20000",
+        "FINANCE_MCP_CACHE_TTL_MS": "10000"
+      }
     }
   }
 }
 ```
+
+## LM Studio Custom Settings
+
+Recommended settings for LM Studio:
+
+- `FINANCE_MCP_HTTP_TIMEOUT_MS`
+  - Increase upstream API timeout for slower responses
+  - good starting value: `20000`
+- `FINANCE_MCP_CACHE_TTL_MS`
+  - Cache repeated requests briefly so tool calls stay responsive
+  - good starting value: `10000`
+
+These are set through the `env` block in the `finance` MCP entry.
+
+## OpenClaw Compatibility
+
+This repo includes an OpenClaw-friendly CLI bridge so OpenClaw can use the same finance tools without depending on MCP host support.
+
+Files:
+
+- `openclaw/finance-tools.js`
+- `openclaw/skill/SKILL.md`
+- `openclaw/install-skill-windows.cmd`
+- `openclaw/install-skill-posix.sh`
+
+### OpenClaw CLI Examples
+
+```bash
+node openclaw/finance-tools.js stock-quote --symbol AAPL
+node openclaw/finance-tools.js stock-batch --symbols AAPL,MSFT,SPY
+node openclaw/finance-tools.js coinbase-pair --pair BTC-USD
+node openclaw/finance-tools.js polymarket-search --query bitcoin --limit 5
+node openclaw/finance-tools.js polymarket-market --slug bitboy-convicted
+```
+
+### OpenClaw Skill Install
+
+Windows:
+
+```bat
+openclaw\install-skill-windows.cmd
+```
+
+Linux or macOS:
+
+```bash
+./openclaw/install-skill-posix.sh
+```
+
+This installs the sample skill to `~/.openclaw/skills/finance-mcp`.
+The install script copies `SKILL.md`, `finance-tools.js`, and `server.js` so the skill works as a self-contained local tool bridge.
 
 ## Notes
 
@@ -116,4 +178,8 @@ macOS:
 - Polymarket uses the public gamma API.
 - The server keeps a short in-memory cache to reduce repeated upstream requests.
 - This is read-only. It does not place trades or authenticate to any exchange.
+- LM Studio expects `mcp.json` to be strict JSON. Do not leave `//` comments or trailing commas in the file.
+- On Windows, direct `node.exe` launch is more reliable in LM Studio than wrapping the server with `cmd /c`.
+- After editing `C:\Users\franz\.lmstudio\mcp.json`, fully restart LM Studio so it reloads the MCP server list.
+- OpenClaw compatibility is provided through the included CLI bridge and skill files, so the same finance actions are available even outside MCP hosts.
 - On Linux or macOS, run `chmod +x start-linux.sh start-macos.sh` after copying the folder if the scripts are not executable.

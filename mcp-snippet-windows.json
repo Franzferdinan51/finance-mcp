@@ -1,11 +1,14 @@
 {
   "mcpServers": {
     "finance": {
-      "command": "cmd",
+      "command": "C:\\Program Files\\nodejs\\node.exe",
       "args": [
-        "/c",
-        "C:\\Users\\franz\\OneDrive\\Desktop\\finance-mcp-server\\start-windows.cmd"
-      ]
+        "C:\\Users\\franz\\OneDrive\\Desktop\\finance-mcp-server\\server.js"
+      ],
+      "env": {
+        "FINANCE_MCP_HTTP_TIMEOUT_MS": "20000",
+        "FINANCE_MCP_CACHE_TTL_MS": "10000"
+      }
     }
   }
 }
