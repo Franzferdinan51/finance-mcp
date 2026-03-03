@@ -8,7 +8,7 @@ const path = require("node:path");
 const openClawSettings = loadOpenClawSettings();
 applyRuntimeDefaults(openClawSettings);
 
-const serverModulePath = resolveServerModulePath();
+const coreModulePath = resolveCoreModulePath();
 
 const {
   getStockQuote,
@@ -17,7 +17,7 @@ const {
   getCoinbasePairPrices,
   searchPolymarketMarkets,
   getPolymarketMarket,
-} = require(serverModulePath);
+} = require(coreModulePath);
 
 const HELP_TEXT = `
 Finance OpenClaw Tool Bridge
@@ -121,9 +121,9 @@ async function main() {
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
 
-function resolveServerModulePath() {
-  const repoPath = path.join(__dirname, "..", "server.js");
-  const installedSkillPath = path.join(__dirname, "server.js");
+function resolveCoreModulePath() {
+  const repoPath = path.join(__dirname, "..", "finance-core.js");
+  const installedSkillPath = path.join(__dirname, "finance-core.js");
 
   try {
     require.resolve(repoPath);

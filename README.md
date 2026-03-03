@@ -8,15 +8,18 @@ Standalone read-only MCP server for:
 - Polymarket market search
 - direct Polymarket market lookup by id or slug
 
-This server is dependency-free and only needs Node.js 18+.
+This server uses the official Node MCP SDK and needs Node.js 18+.
+Run `npm install` once in the folder, or use the included start scripts and they will bootstrap dependencies automatically.
 
 ## Files
 
-- `server.js`: MCP stdio server
+- `finance-core.js`: shared read-only finance logic used by both MCP and OpenClaw
+- `server.js`: MCP stdio server built on the official MCP SDK
 - `start-windows.cmd`: Windows launcher
 - `start-linux.sh`: Linux launcher
 - `start-macos.sh`: macOS launcher
-- `package.json`: metadata and `npm start`
+- `package.json`: metadata and runtime dependencies
+- `package-lock.json`: pinned dependency versions for consistent installs
 - `openclaw/`: OpenClaw CLI bridge, install scripts, and config snippet
 
 ## Exposed Tools
@@ -47,8 +50,17 @@ Optional environment variables:
   - default: `5000`
   - set to `0` to disable caching
   - clamp: `0` to `300000`
+- `FINANCE_MCP_SILENT`
+  - suppress the startup banner in tool-host logs
+  - recommended for LM Studio: `1`
 
 ## Start The Server
+
+Install dependencies first:
+
+```bash
+npm install
+```
 
 Directly with Node:
 
@@ -68,11 +80,18 @@ With the included launchers:
 - Linux: `./start-linux.sh`
 - macOS: `./start-macos.sh`
 
+The launchers check for local dependencies and run `npm install --no-fund --no-audit` automatically if needed.
+
 ### Windows launcher behavior
 
 `start-windows.cmd` starts a stdio MCP server. If you run it manually, it will stay open and look mostly idle until LM Studio or another MCP host connects.
 
 That is expected. It is waiting for MCP traffic, not serving an HTTP page.
+
+## LM Studio Compatibility
+
+LM Studio's MCP bridge expects newline-delimited JSON over stdio, which is the transport used by the official Node MCP SDK.
+This repo now uses that same SDK transport, which is why it connects cleanly in LM Studio.
 
 ## LM Studio mcp.json Example
 
@@ -87,9 +106,10 @@ Windows:
         "C:\\Users\\franz\\OneDrive\\Desktop\\finance-mcp-server\\server.js"
       ],
       "env": {
+        "FINANCE_MCP_SILENT": "1",
         "FINANCE_MCP_HTTP_TIMEOUT_MS": "20000",
         "FINANCE_MCP_CACHE_TTL_MS": "10000"
-      ]
+      }
     }
   }
 }
@@ -103,6 +123,7 @@ Linux:
     "finance": {
       "command": "/absolute/path/to/finance-mcp-server/start-linux.sh",
       "env": {
+        "FINANCE_MCP_SILENT": "1",
         "FINANCE_MCP_HTTP_TIMEOUT_MS": "20000",
         "FINANCE_MCP_CACHE_TTL_MS": "10000"
       }
@@ -119,6 +140,7 @@ macOS:
     "finance": {
       "command": "/absolute/path/to/finance-mcp-server/start-macos.sh",
       "env": {
+        "FINANCE_MCP_SILENT": "1",
         "FINANCE_MCP_HTTP_TIMEOUT_MS": "20000",
         "FINANCE_MCP_CACHE_TTL_MS": "10000"
       }
@@ -132,11 +154,14 @@ macOS:
 Recommended settings for LM Studio:
 
 - `FINANCE_MCP_HTTP_TIMEOUT_MS`
-  - Increase upstream API timeout for slower responses
+  - increase upstream API timeout for slower responses
   - good starting value: `20000`
 - `FINANCE_MCP_CACHE_TTL_MS`
-  - Cache repeated requests briefly so tool calls stay responsive
+  - cache repeated requests briefly so tool calls stay responsive
   - good starting value: `10000`
+- `FINANCE_MCP_SILENT`
+  - suppress the startup banner in LM Studio plugin logs
+  - recommended value: `1`
 
 These are set through the `env` block in the `finance` MCP entry.
 
@@ -190,7 +215,7 @@ Linux or macOS:
 ```
 
 This installs the sample skill to `~/.openclaw/skills/finance-mcp`.
-The install script copies `SKILL.md`, `finance-tools.js`, `server.js`, and the start scripts so the skill works as a self-contained local tool bridge.
+The install script copies `SKILL.md`, `finance-tools.js`, `finance-core.js`, `server.js`, the start scripts, and the npm metadata so the skill folder can run the MCP server locally if needed.
 
 ### OpenClaw Config Defaults
 
@@ -233,6 +258,7 @@ Once that is set:
 - This is read-only. It does not place trades or authenticate to any exchange.
 - LM Studio expects `mcp.json` to be strict JSON. Do not leave `//` comments or trailing commas in the file.
 - On Windows, direct `node.exe` launch is more reliable in LM Studio than wrapping the server with `cmd /c`.
+- If you copy this folder somewhere else, run `npm install` in that folder once before pointing LM Studio at `server.js`, unless you plan to use the included start scripts for first-run bootstrap.
 - After editing `C:\Users\franz\.lmstudio\mcp.json`, fully restart LM Studio so it reloads the MCP server list.
 - OpenClaw compatibility is provided through the included CLI bridge and skill files, so the same finance actions are available even outside MCP hosts.
 - `start-windows.cmd` is a stdio launcher. When started manually, it will stay mostly idle until an MCP host connects.
