@@ -8,4 +8,8 @@ if errorlevel 1 (
   exit /b 1
 )
 
+if "%FINANCE_MCP_SILENT%"=="" (
+  echo [finance-mcp] Starting stdio server. This console will stay mostly idle until an MCP host connects. 1>&2
+)
+
 node "%~dp0server.js"

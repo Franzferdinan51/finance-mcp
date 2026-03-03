@@ -17,6 +17,7 @@ This server is dependency-free and only needs Node.js 18+.
 - `start-linux.sh`: Linux launcher
 - `start-macos.sh`: macOS launcher
 - `package.json`: metadata and `npm start`
+- `openclaw/`: OpenClaw CLI bridge, install scripts, and config snippet
 
 ## Exposed Tools
 
@@ -136,6 +137,17 @@ These are set through the `env` block in the `finance` MCP entry.
 ## OpenClaw Compatibility
 
 This repo includes an OpenClaw-friendly CLI bridge so OpenClaw can use the same finance tools without depending on MCP host support.
+The fastest no-setup usage path after install is:
+
+```bash
+node finance-tools.js quick
+```
+
+From the repo itself, you can also run:
+
+```bash
+npm run openclaw:quick
+```
 
 Files:
 
@@ -143,15 +155,18 @@ Files:
 - `openclaw/skill/SKILL.md`
 - `openclaw/install-skill-windows.cmd`
 - `openclaw/install-skill-posix.sh`
+- `openclaw/openclaw-config-snippet.json`
 
 ### OpenClaw CLI Examples
 
 ```bash
+node openclaw/finance-tools.js quick
 node openclaw/finance-tools.js stock-quote --symbol AAPL
 node openclaw/finance-tools.js stock-batch --symbols AAPL,MSFT,SPY
 node openclaw/finance-tools.js coinbase-pair --pair BTC-USD
 node openclaw/finance-tools.js polymarket-search --query bitcoin --limit 5
 node openclaw/finance-tools.js polymarket-market --slug bitboy-convicted
+node openclaw/finance-tools.js config
 ```
 
 ### OpenClaw Skill Install
@@ -169,7 +184,39 @@ Linux or macOS:
 ```
 
 This installs the sample skill to `~/.openclaw/skills/finance-mcp`.
-The install script copies `SKILL.md`, `finance-tools.js`, and `server.js` so the skill works as a self-contained local tool bridge.
+The install script copies `SKILL.md`, `finance-tools.js`, `server.js`, and the start scripts so the skill works as a self-contained local tool bridge.
+
+### OpenClaw Config Defaults
+
+To make the tool easy for OpenClaw agents to use, add defaults in `~/.openclaw/openclaw.json` under `skills.entries["finance-mcp"]`.
+
+Example:
+
+```json
+{
+  "skills": {
+    "entries": {
+      "finance-mcp": {
+        "defaultStockSymbols": ["AAPL", "MSFT", "SPY"],
+        "defaultCoinbasePair": "BTC-USD",
+        "defaultPolymarketQuery": "bitcoin",
+        "defaultPolymarketSlug": "bitboy-convicted",
+        "defaultPolymarketLimit": 3,
+        "httpTimeoutMs": 20000,
+        "cacheTtlMs": 10000
+      }
+    }
+  }
+}
+```
+
+Once that is set:
+
+- `node finance-tools.js quick` uses those defaults automatically
+- `node finance-tools.js stock-batch` uses `defaultStockSymbols`
+- `node finance-tools.js coinbase-pair` uses `defaultCoinbasePair`
+- `node finance-tools.js polymarket-search` uses `defaultPolymarketQuery`
+- `node finance-tools.js polymarket-market` can fall back to `defaultPolymarketSlug`
 
 ## Notes
 
@@ -182,4 +229,5 @@ The install script copies `SKILL.md`, `finance-tools.js`, and `server.js` so the
 - On Windows, direct `node.exe` launch is more reliable in LM Studio than wrapping the server with `cmd /c`.
 - After editing `C:\Users\franz\.lmstudio\mcp.json`, fully restart LM Studio so it reloads the MCP server list.
 - OpenClaw compatibility is provided through the included CLI bridge and skill files, so the same finance actions are available even outside MCP hosts.
+- `start-windows.cmd` is a stdio launcher. When started manually, it will stay mostly idle until an MCP host connects.
 - On Linux or macOS, run `chmod +x start-linux.sh start-macos.sh` after copying the folder if the scripts are not executable.

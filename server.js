@@ -3,7 +3,7 @@
 const { URL } = require("node:url");
 
 const SERVER_NAME = "finance-mcp-server";
-const SERVER_VERSION = "0.3.0";
+const SERVER_VERSION = "0.4.0";
 const DEFAULT_PROTOCOL_VERSION = "2024-11-05";
 const MAX_BATCH_SYMBOLS = 10;
 const HTTP_TIMEOUT_MS = readIntegerEnv("FINANCE_MCP_HTTP_TIMEOUT_MS", 15000, 1000, 60000);
@@ -153,6 +153,9 @@ function startServer() {
   process.on("unhandledRejection", (error) => {
     logError("unhandledRejection", error);
   });
+
+  // Keep the stdio server alive even when started directly from a console window.
+  process.stdin.resume();
 }
 
 function drainMessages() {

@@ -1,0 +1,19 @@
+{
+  "skills": {
+    "entries": {
+      "finance-mcp": {
+        "defaultStockSymbols": [
+          "AAPL",
+          "MSFT",
+          "SPY"
+        ],
+        "defaultCoinbasePair": "BTC-USD",
+        "defaultPolymarketQuery": "bitcoin",
+        "defaultPolymarketSlug": "bitboy-convicted",
+        "defaultPolymarketLimit": 3,
+        "httpTimeoutMs": 20000,
+        "cacheTtlMs": 10000
+      }
+    }
+  }
+}

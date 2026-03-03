@@ -1,13 +1,15 @@
 {
   "name": "finance-mcp-server",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Standalone read-only MCP server for stocks, Coinbase, and Polymarket.",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "openclaw": "node openclaw/finance-tools.js --help"
+    "openclaw": "node openclaw/finance-tools.js --help",
+    "openclaw:quick": "node openclaw/finance-tools.js quick",
+    "openclaw:config": "node openclaw/finance-tools.js config"
   },
   "bin": {
     "finance-openclaw": "./openclaw/finance-tools.js"
