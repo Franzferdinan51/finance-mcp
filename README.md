@@ -68,6 +68,12 @@ With the included launchers:
 - Linux: `./start-linux.sh`
 - macOS: `./start-macos.sh`
 
+### Windows launcher behavior
+
+`start-windows.cmd` starts a stdio MCP server. If you run it manually, it will stay open and look mostly idle until LM Studio or another MCP host connects.
+
+That is expected. It is waiting for MCP traffic, not serving an HTTP page.
+
 ## LM Studio mcp.json Example
 
 Windows:
